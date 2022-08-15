@@ -1,6 +1,5 @@
 ﻿using System;
-using Blog.Models;
-using Blog.Repositories;
+using Blog.Screens.TagScreens;
 using Microsoft.Data.SqlClient;
 
 namespace Blog
@@ -11,55 +10,39 @@ namespace Blog
 
         static void Main(string[] args)
         {
-            using var connection = new SqlConnection(CONNECTION_STRING);
-            var repository = new Repository<User>(connection);
+            Database.Connection = new SqlConnection(CONNECTION_STRING);
+            Database.Connection.Open();
 
-            // CreateUser(repository);
-            // UpdateUser(repository);
-            // DeleteUser(repository);
-            // ReadUser(repository);
-            ReadUsers(repository);
-            //ReadWithRoles(connection);
+            Load();
+
+            Console.ReadKey();
+            Database.Connection.Close();
         }
 
-
-        private static void ReadUsers(Repository<User> repository)
+        private static void Load()
         {
-            var users = repository.Read();
-            foreach (var item in users)
-                Console.WriteLine(item.Email);
-        }
+            Console.Clear();
+            Console.WriteLine("Meu Blog");
+            Console.WriteLine("-----------------");
+            Console.WriteLine("O que deseja fazer?");
+            Console.WriteLine();
+            Console.WriteLine("1 - Gestão de usuário");
+            Console.WriteLine("2 - Gestão de perfil");
+            Console.WriteLine("3 - Gestão de categoria");
+            Console.WriteLine("4 - Gestão de tag");
+            Console.WriteLine("5 - Vincular perfil/usuário");
+            Console.WriteLine("6 - Vincular post/tag");
+            Console.WriteLine("7 - Relatórios");
+            Console.WriteLine();
+            Console.WriteLine();
+            var option = short.Parse(Console.ReadLine()!);
 
-        private static void ReadUser(Repository<User> repository)
-        {
-            var user = repository.Read(2);
-            Console.WriteLine(user?.Email);
-        }
-
-        private static void UpdateUser(Repository<User> repository)
-        {
-            var user = repository.Read(2);
-            user.Email = "hello@balta.io";
-            repository.Update(user);
-
-            Console.WriteLine(user?.Email);
-        }
-
-        private static void DeleteUser(Repository<User> repository)
-        {
-            var user = repository.Read(2);
-            repository.Delete(user);
-        }
-
-        private static void ReadWithRoles(SqlConnection connection)
-        {
-            var repository = new UserRepository(connection);
-            var users = repository.ReadWithRole();
-
-            foreach (var user in users)
+            switch (option)
             {
-                Console.WriteLine(user.Email);
-                foreach (var role in user.Roles) Console.WriteLine($" - {role.Slug}");
+                case 4:
+                    MenuTagScreen.Load();
+                    break;
+                default: Load(); break;
             }
         }
     }
